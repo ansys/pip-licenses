@@ -1,21 +1,74 @@
-name: Python package
+name: GitHub CI
 
 on:
-  push:
-    branches: [master]
   pull_request:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*"
     branches:
-      - master
-      - "dev*"
-      - "release*"
+      - main
+
+env:
+  MAIN_PYTHON_VERSION: '3.12'
+  PACKAGE_NAME: 'pip-licenses'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+
+  smoke-tests:
+    name: Build and Smoke tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    steps:
+      - name: Build wheelhouse and perform smoke test
+        uses: ansys/actions/build-wheelhouse@v8
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
+
+  tests:
+    name: Running tests
+    needs: [smoke-tests]
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.9', '3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dev-requirements.txt
+      - name: Test with pytest
+        run: |
+          pytest --pycodestyle -v --cov --cov-report=xml
+      - name: Upload Coverage Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-${{ matrix.os }}-${{ matrix.python-version }}
+          path: .cov/html
+          retention-days: 7
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          name: codecov-${{ matrix.os }}-${{ matrix.python-version }}
+          files: .cov/xml
 
+  code-style:
+    name: Code style
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -26,24 +79,48 @@ jobs:
         uses: psf/black@stable
         with:
           options: "--check --diff"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f dev-requirements.txt ]; then pip install -r dev-requirements.txt; fi
-      - name: Test with pytest
-        run: |
-          pytest --pycodestyle -v --cov --cov-report=xml
       - name: Validate static typing with mypy
         run: |
           mkdir -p .mypy_cache
           mypy --install-types --non-interactive .
-      - name: Upload code coverage to Codecov
-        if: ${{ matrix.python-version==3.11 }}
-        uses: codecov/codecov-action@v4
+
+  build-library:
+    name: Build library
+    runs-on: ubuntu-latest
+    needs: [tests]
+    steps:
+      - name: "Build library source and wheel artifacts"
+        uses: ansys/actions/build-library@v8
         with:
-          files: ./coverage.xml
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          library-name: ${{ env.PACKAGE_NAME }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+  release:
+    name: Release project
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [build-library]
+    runs-on: ubuntu-latest
+    # Specifying a GitHub environment is optional, but strongly encouraged
+    environment: release
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+    #  - name: "Release to the private PyPI repository"
+    #    uses: ansys/actions/release-pypi-private@v1
+    #    with:
+    #      library-name: ${{ env.PACKAGE_NAME }}
+    #      twine-username: "__token__"
+    #      twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+    #
+    #  - name: "Release to the public PyPI repository"
+    #    uses: ansys/actions/release-pypi-public@v1
+    #    with:
+    #      library-name: ${{ env.PACKAGE_NAME }}
+    #      twine-username: "__token__"
+    #      twine-token: ${{ secrets.PYPI_TOKEN }}
+    #
+      - name: Release to GitHub
+        uses: ansys/actions/release-github@v8
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
