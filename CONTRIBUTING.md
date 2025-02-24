@@ -17,13 +17,13 @@ The design policy of `pip-licenses` is as follows.
 3. Create a new venv environment.
 4. Install package for development via `make setup` .
     * Dependencies are managed by [pip-tools](https://pypi.org/project/pip-tools/).
-    * If you want to add dependency packages for development, edit [dev-requirements.in](https://github.com/raimon49/pip-licenses/blob/master/dev-requirements.in) file and run `make update-depends` .
+    * If you want to add dependency packages for development, edit [dev-requirements.in](https://github.com/ansys/pip-licenses/blob/main/dev-requirements.in) file and run `make update-depends` .
     * When you want to install the code under development, run `make local-install` .
 
 ## Implementation and testing
 
-* `pip-licenses` always measures code coverage for code quality. If you implement the new feature, please also write unit test in [test\_piplicenses.py](https://github.com/raimon49/pip-licenses/blob/master/test_piplicenses.py).
+* `pip-licenses` always measures code coverage for code quality. If you implement the new feature, please also write unit test in [test\_piplicenses.py](https://github.com/ansys/pip-licenses/blob/main/test_piplicenses.py).
     * Tests can be run with `make test` .
 * Code conventions follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/).
     * You can format the code by running `make lint` .
-* Send pull request to master branch.
+* Send pull request to main branch.
