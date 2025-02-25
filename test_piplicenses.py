@@ -222,7 +222,9 @@ class TestGetLicenses(CommandLineTestCase):
 
         license_columns = self._create_license_columns(table, output_fields)
         license_notation_as_expression = "MIT"
-        self.assertIn(license_notation_as_expression, license_columns)
+        # TODO enable assert once a dependency uses 'License-Expression'
+        # TODO (maybe black)
+        # self.assertIn(license_notation_as_expression, license_columns)
 
     def test_from_all(self) -> None:
         from_args = ["--from=all"]
@@ -257,8 +259,10 @@ class TestGetLicenses(CommandLineTestCase):
             "Apache Software License",
         ):
             self.assertIn(license_name, license_classifier)
-        for license_name in ("MIT",):
-            self.assertIn(license_name, license_expression)
+        # TODO enable assert once a dependency uses 'License-Expression'
+        # TODO (maybe black)
+        # for license_name in ("MIT",):
+        #     self.assertIn(license_name, license_expression)
 
     def test_find_license_from_classifier(self) -> None:
         classifiers = ["License :: OSI Approved :: MIT License"]
