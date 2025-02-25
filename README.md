@@ -5,7 +5,11 @@ Ansys fork of [pip-licenses](https://github.com/raimon49/pip-licenses)
 The original project is no longer maintained and, to keep it alive and up to date, we decided to fork it.
 We respect the original work and aim to continue its development while making it more sustainable for the future.
 
-[![Build Status](https://github.com/ansys/pip-licenses/workflows/Python%20package/badge.svg)](https://github.com/ansys/pip-licenses/actions?query=workflow%3A%22Python+package%22) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pip-licenses.svg)](https://pypi.org/project/pip-licenses/) [![PyPI version](https://badge.fury.io/py/pip-licenses.svg)](https://badge.fury.io/py/pip-licenses) [![GitHub Release](https://img.shields.io/github/release/ansys/pip-licenses.svg)](https://github.com/ansys/pip-licenses/releases) [![Codecov](https://codecov.io/gh/ansys/pip-licenses/branch/main/graph/badge.svg)](https://codecov.io/gh/ansys/pip-licenses) [![GitHub contributors](https://img.shields.io/github/contributors/ansys/pip-licenses)](https://github.com/ansys/pip-licenses/graphs/contributors) [![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ansys/pip-licenses/blob/main/LICENSE) [![PyPI - Downloads](https://img.shields.io/pypi/dm/pip-licenses)](https://pypistats.org/packages/pip-licenses)
+[![CICD Status](https://github.com/ansys/pip-licenses/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/ansys/pip-licenses/actions/workflows/ci_cd.yml)
+[![GitHub Release](https://img.shields.io/github/release/ansys/pip-licenses.svg)](https://github.com/ansys/pip-licenses/releases)
+[![Codecov](https://codecov.io/gh/ansys/pip-licenses/branch/main/graph/badge.svg)](https://codecov.io/gh/ansys/pip-licenses)
+[![GitHub contributors](https://img.shields.io/github/contributors/ansys/pip-licenses)](https://github.com/ansys/pip-licenses/graphs/contributors)
+[![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ansys/pip-licenses/blob/main/LICENSE)
 
 Dump the software license list of Python packages installed with pip.
 
