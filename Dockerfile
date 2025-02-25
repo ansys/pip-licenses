@@ -1,5 +1,5 @@
 FROM python:3.11-slim-bullseye
-LABEL maintainer="raimon <raimon49@hotmail.com>"
+LABEL email="pyansys.core@ansys.com"
 
 ARG APPDIR=/opt/piplicenses
 

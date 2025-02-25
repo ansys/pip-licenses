@@ -1,6 +1,11 @@
 # pip-licenses
 
-[![Build Status](https://github.com/raimon49/pip-licenses/workflows/Python%20package/badge.svg)](https://github.com/raimon49/pip-licenses/actions?query=workflow%3A%22Python+package%22) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pip-licenses.svg)](https://pypi.org/project/pip-licenses/) [![PyPI version](https://badge.fury.io/py/pip-licenses.svg)](https://badge.fury.io/py/pip-licenses) [![GitHub Release](https://img.shields.io/github/release/raimon49/pip-licenses.svg)](https://github.com/raimon49/pip-licenses/releases) [![Codecov](https://codecov.io/gh/raimon49/pip-licenses/branch/master/graph/badge.svg)](https://codecov.io/gh/raimon49/pip-licenses) [![GitHub contributors](https://img.shields.io/github/contributors/raimon49/pip-licenses)](https://github.com/raimon49/pip-licenses/graphs/contributors) [![BSD License](http://img.shields.io/badge/license-MIT-green.svg)](https://github.com/raimon49/pip-licenses/blob/master/LICENSE) [![PyPI - Downloads](https://img.shields.io/pypi/dm/pip-licenses)](https://pypistats.org/packages/pip-licenses)
+Ansys fork of [pip-licenses](https://github.com/raimon49/pip-licenses)
+
+The original project is no longer maintained and, to keep it alive and up to date, we decided to fork it.
+We respect the original work and aim to continue its development while making it more sustainable for the future.
+
+[![Build Status](https://github.com/ansys/pip-licenses/workflows/Python%20package/badge.svg)](https://github.com/ansys/pip-licenses/actions?query=workflow%3A%22Python+package%22) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pip-licenses.svg)](https://pypi.org/project/pip-licenses/) [![PyPI version](https://badge.fury.io/py/pip-licenses.svg)](https://badge.fury.io/py/pip-licenses) [![GitHub Release](https://img.shields.io/github/release/ansys/pip-licenses.svg)](https://github.com/ansys/pip-licenses/releases) [![Codecov](https://codecov.io/gh/ansys/pip-licenses/branch/main/graph/badge.svg)](https://codecov.io/gh/ansys/pip-licenses) [![GitHub contributors](https://img.shields.io/github/contributors/ansys/pip-licenses)](https://github.com/ansys/pip-licenses/graphs/contributors) [![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ansys/pip-licenses/blob/main/LICENSE) [![PyPI - Downloads](https://img.shields.io/pypi/dm/pip-licenses)](https://pypistats.org/packages/pip-licenses)
 
 Dump the software license list of Python packages installed with pip.
 
@@ -620,7 +625,7 @@ You can check the package license used by your app in the isolated Docker enviro
 
 ```bash
 # Clone this repository to local
-$ git clone https://github.com/raimon49/pip-licenses.git
+$ git clone https://github.com/ansys/pip-licenses.git
 $ cd pip-licenses
 
 # Create your app's requirements.txt file
@@ -677,7 +682,7 @@ See useful reports:
 
 ## License
 
-[MIT License](https://github.com/raimon49/pip-licenses/blob/master/LICENSE)
+[MIT License](https://github.com/ansys/pip-licenses/blob/main/LICENSE)
 
 ### Dependencies
 
@@ -698,4 +703,4 @@ $ pip uninstall pip-licenses prettytable wcwidth
 
 ## Contributing
 
-See [contribution guidelines](https://github.com/raimon49/pip-licenses/blob/master/CONTRIBUTING.md).
+See [contribution guidelines](https://github.com/ansys/pip-licenses/blob/main/CONTRIBUTING.md).
