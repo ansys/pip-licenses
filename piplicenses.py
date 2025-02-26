@@ -43,11 +43,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Iterable, List, Type, cast
 
 import tomli
-from prettytable import ALL as RULE_ALL
-from prettytable import FRAME as RULE_FRAME
-from prettytable import HEADER as RULE_HEADER
-from prettytable import NONE as RULE_NONE
-from prettytable import PrettyTable
+from prettytable import HRuleStyle, PrettyTable, RowType
 
 if TYPE_CHECKING:
     from email.message import Message
@@ -151,7 +147,7 @@ def normalize_pkg_name(pkg_name: str) -> str:
     return PATTERN_DELIMITER.sub("-", pkg_name).lower()
 
 
-METADATA_KEYS: Dict[str, List[Callable[[Message], Optional[str]]]] = {
+METADATA_KEYS: Dict[str, list[Callable[[Message], Optional[str]]]] = {
     "home-page": [extract_homepage],
     "author": [
         lambda metadata: metadata.get("author"),
@@ -210,7 +206,7 @@ def get_packages(
             lambda file: pattern.match(file.name), pkg_files
         )
         for rel_path in matched_rel_paths:
-            abs_path = Path(pkg.locate_file(rel_path))
+            abs_path = Path(str(pkg.locate_file(rel_path)))
             if not abs_path.is_file():
                 continue
             included_file = str(abs_path)
@@ -314,7 +310,7 @@ def get_packages(
 
         license_names = select_license_by_source(
             args.from_,
-            cast(List[str], pkg_info["license_classifier"]),
+            cast(list[str], pkg_info["license_classifier"]),
             cast(str, pkg_info["license"]),
             cast(str, pkg_info["license_expression"]),
         )
@@ -367,7 +363,7 @@ def get_packages(
 
 def create_licenses_table(
     args: CustomNamespace,
-    output_fields: Iterable[str] = DEFAULT_OUTPUT_FIELDS,
+    output_fields: Sequence[str] = DEFAULT_OUTPUT_FIELDS,
 ) -> PrettyTable:
     table = factory_styled_table_with_args(args, output_fields)
 
@@ -377,7 +373,7 @@ def create_licenses_table(
             if field == "License":
                 license_set = select_license_by_source(
                     args.from_,
-                    cast(List[str], pkg["license_classifier"]),
+                    cast(list[str], pkg["license_classifier"]),
                     cast(str, pkg["license"]),
                     cast(str, pkg["license_expression"]),
                 )
@@ -403,7 +399,7 @@ def create_summary_table(args: CustomNamespace) -> PrettyTable:
             sorted(
                 select_license_by_source(
                     args.from_,
-                    cast(List[str], pkg["license_classifier"]),
+                    cast(list[str], pkg["license_classifier"]),
                     cast(str, pkg["license"]),
                     cast(str, pkg["license_expression"]),
                 )
@@ -459,8 +455,8 @@ def case_insensitive_set_diff(set_a, set_b):
 class JsonPrettyTable(PrettyTable):
     """PrettyTable-like class exporting to JSON"""
 
-    def _format_row(self, row: Iterable[str]) -> dict[str, str | list[str]]:
-        resrow: dict[str, str | List[str]] = {}
+    def format_row(self, row: RowType) -> dict[str, str | list[str]]:
+        resrow: dict[str, str | list[str]] = {}
         for field, value in zip(self._field_names, row):
             resrow[field] = value
 
@@ -474,18 +470,13 @@ class JsonPrettyTable(PrettyTable):
 
         options = self._get_options(kwargs)
         rows = self._get_rows(options)
-        formatted_rows = self._format_rows(rows)
-
-        lines = []
-        for row in formatted_rows:
-            lines.append(row)
-
+        lines = [self.format_row(row) for row in rows]
         return json.dumps(lines, indent=2, sort_keys=True)
 
 
 class JsonLicenseFinderTable(JsonPrettyTable):
-    def _format_row(self, row: Iterable[str]) -> dict[str, str | list[str]]:
-        resrow: dict[str, str | List[str]] = {}
+    def format_row(self, row: RowType) -> dict[str, str | list[str]]:
+        resrow: dict[str, str | list[str]] = {}
         for field, value in zip(self._field_names, row):
             if field == "Name":
                 resrow["name"] = value
@@ -506,12 +497,7 @@ class JsonLicenseFinderTable(JsonPrettyTable):
 
         options = self._get_options(kwargs)
         rows = self._get_rows(options)
-        formatted_rows = self._format_rows(rows)
-
-        lines = []
-        for row in formatted_rows:
-            lines.append(row)
-
+        lines = [self.format_row(row) for row in rows]
         return json.dumps(lines, sort_keys=True)
 
 
@@ -542,12 +528,12 @@ class CSVPrettyTable(PrettyTable):
             ['"%s"' % (esc_quotes(val),) for val in self._field_names]
         )
         lines.append(formatted_header)
-        for row in formatted_rows:
-            formatted_row = ",".join(
-                ['"%s"' % (esc_quotes(val),) for val in row]
-            )
-            lines.append(formatted_row)
-
+        lines.extend(
+            [
+                ",".join(f'"{esc_quotes(val)}"' for val in row)
+                for row in formatted_rows
+            ]
+        )
         return "\n".join(lines)
 
 
@@ -573,7 +559,7 @@ class PlainVerticalTable(PrettyTable):
 
 def factory_styled_table_with_args(
     args: CustomNamespace,
-    output_fields: Iterable[str] = DEFAULT_OUTPUT_FIELDS,
+    output_fields: Sequence[str] = DEFAULT_OUTPUT_FIELDS,
 ) -> PrettyTable:
     table = PrettyTable()
     table.field_names = output_fields  # type: ignore[assignment]
@@ -588,13 +574,13 @@ def factory_styled_table_with_args(
 
     if args.format_ == FormatArg.MARKDOWN:
         table.junction_char = "|"
-        table.hrules = RULE_HEADER
+        table.hrules = HRuleStyle.HEADER
     elif args.format_ == FormatArg.RST:
         table.junction_char = "+"
-        table.hrules = RULE_ALL
+        table.hrules = HRuleStyle.ALL
     elif args.format_ == FormatArg.CONFLUENCE:
         table.junction_char = "|"
-        table.hrules = RULE_NONE
+        table.hrules = HRuleStyle.NONE
     elif args.format_ == FormatArg.JSON:
         table = JsonPrettyTable(table.field_names)
     elif args.format_ == FormatArg.JSON_LICENSE_FINDER:
@@ -778,7 +764,7 @@ class CustomHelpFormatter(argparse.HelpFormatter):  # pragma: no cover
             }
         return super()._expand_help(action)
 
-    def _split_lines(self, text: str, width: int) -> List[str]:
+    def _split_lines(self, text: str, width: int) -> list[str]:
         separator_pos = text[:3].find("|")
         if separator_pos != -1:
             flag_splitlines: bool = "R" in text[:separator_pos]
@@ -794,8 +780,8 @@ class CustomNamespace(argparse.Namespace):
     format_: "FormatArg"
     summary: bool
     output_file: str
-    ignore_packages: List[str]
-    packages: List[str]
+    ignore_packages: list[str]
+    packages: list[str]
     with_system: bool
     with_authors: bool
     with_urls: bool
@@ -886,7 +872,7 @@ def enum_key_to_value(enum_key: Enum) -> str:
     return enum_key.name.replace("_", "-").lower()
 
 
-def choices_from_enum(enum_cls: Type[NoValueEnum]) -> List[str]:
+def choices_from_enum(enum_cls: Type[NoValueEnum]) -> list[str]:
     return [
         key.replace("_", "-").lower() for key in enum_cls.__members__.keys()
     ]

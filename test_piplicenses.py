@@ -27,10 +27,6 @@ import piplicenses
 from piplicenses import (
     DEFAULT_OUTPUT_FIELDS,
     LICENSE_UNKNOWN,
-    RULE_ALL,
-    RULE_FRAME,
-    RULE_HEADER,
-    RULE_NONE,
     SYSTEM_PACKAGES,
     CompatibleArgumentParser,
     FromArg,
@@ -56,6 +52,7 @@ from piplicenses import (
     select_license_by_source,
     value_to_enum_key,
 )
+from prettytable import HRuleStyle
 
 if TYPE_CHECKING:
     if sys.version_info >= (3, 10):
@@ -156,7 +153,7 @@ class TestGetLicenses(CommandLineTestCase):
         self.assertFalse(table.border)
         self.assertTrue(table.header)
         self.assertEqual("+", table.junction_char)
-        self.assertEqual(RULE_FRAME, table.hrules)
+        self.assertEqual(HRuleStyle.FRAME, table.hrules)
 
         output_fields = get_output_fields(args)
         self.assertEqual(
@@ -601,7 +598,7 @@ class TestGetLicenses(CommandLineTestCase):
         self.assertFalse(table.border)
         self.assertTrue(table.header)
         self.assertEqual("+", table.junction_char)
-        self.assertEqual(RULE_FRAME, table.hrules)
+        self.assertEqual(HRuleStyle.FRAME, table.hrules)
 
     def test_format_plain_vertical(self) -> None:
         format_plain_args = ["--format=plain-vertical", "--from=classifier"]
@@ -620,7 +617,7 @@ class TestGetLicenses(CommandLineTestCase):
         self.assertTrue(table.border)
         self.assertTrue(table.header)
         self.assertEqual("|", table.junction_char)
-        self.assertEqual(RULE_HEADER, table.hrules)
+        self.assertEqual(HRuleStyle.HEADER, table.hrules)
 
     @unittest.skipIf(
         sys.version_info < (3, 6, 0),
@@ -638,7 +635,7 @@ class TestGetLicenses(CommandLineTestCase):
         self.assertTrue(table.border)
         self.assertTrue(table.header)
         self.assertEqual("+", table.junction_char)
-        self.assertEqual(RULE_ALL, table.hrules)
+        self.assertEqual(HRuleStyle.ALL, table.hrules)
         piplicenses.importlib_metadata.distributions = (
             importlib_metadata_distributions_orig
         )
@@ -655,7 +652,7 @@ class TestGetLicenses(CommandLineTestCase):
         self.assertTrue(table.border)
         self.assertTrue(table.header)
         self.assertEqual("+", table.junction_char)
-        self.assertEqual(RULE_ALL, table.hrules)
+        self.assertEqual(HRuleStyle.ALL, table.hrules)
         self.check_rst(str(table))
         piplicenses.importlib_metadata.distributions = (
             importlib_metadata_distributions_orig
@@ -670,7 +667,7 @@ class TestGetLicenses(CommandLineTestCase):
         self.assertTrue(table.border)
         self.assertTrue(table.header)
         self.assertEqual("|", table.junction_char)
-        self.assertEqual(RULE_NONE, table.hrules)
+        self.assertEqual(HRuleStyle.NONE, table.hrules)
 
     def test_format_html(self) -> None:
         format_html_args = ["--format=html", "--with-authors"]
@@ -934,6 +931,13 @@ def test_allow_only(monkeypatch) -> None:
         "GNU Library or Lesser General Public License (LGPL)",
     )
     allow_only_args = ["--allow-only={}".format(";".join(licenses))]
+    # Depending on the file system used, packages might be traversed in a
+    # different order and we can't tell if it will be "MIT" or "MIT License"
+    # that is picked first.
+    expected_msgs = (
+        "license MIT not in allow-only licenses was found for package",
+        "license MIT License not in allow-only licenses was found for package",
+    )
     mocked_stdout = MockStdStream()
     mocked_stderr = MockStdStream()
     monkeypatch.setattr(sys.stdout, "write", mocked_stdout.write)
@@ -943,10 +947,7 @@ def test_allow_only(monkeypatch) -> None:
     create_licenses_table(args)
 
     assert "" == mocked_stdout.printed
-    assert (
-        "license MIT License not in allow-only licenses was found for "
-        "package" in mocked_stderr.printed
-    )
+    assert any(msg in mocked_stderr.printed for msg in expected_msgs)
 
 
 def test_allow_only_partial(monkeypatch) -> None:
@@ -963,6 +964,13 @@ def test_allow_only_partial(monkeypatch) -> None:
         "--partial-match",
         "--allow-only={}".format(";".join(licenses)),
     ]
+    # Depending on the file system used, packages might be traversed in a
+    # different order and we can't tell if it will be "MIT" or "MIT License"
+    # that is picked first.
+    expected_msgs = (
+        "license MIT not in allow-only licenses was found for package",
+        "license MIT License not in allow-only licenses was found for package",
+    )
     mocked_stdout = MockStdStream()
     mocked_stderr = MockStdStream()
     monkeypatch.setattr(sys.stdout, "write", mocked_stdout.write)
@@ -972,10 +980,7 @@ def test_allow_only_partial(monkeypatch) -> None:
     create_licenses_table(args)
 
     assert "" == mocked_stdout.printed
-    assert (
-        "license MIT License not in allow-only licenses was found for "
-        "package" in mocked_stderr.printed
-    )
+    assert any(msg in mocked_stderr.printed for msg in expected_msgs)
 
 
 def test_different_python() -> None:
@@ -1025,6 +1030,13 @@ def test_fail_on_partial_match(monkeypatch) -> None:
         "--partial-match",
         "--fail-on={}".format(";".join(licenses)),
     ]
+    # Depending on the file system used, packages might be traversed in a
+    # different order and we can't tell if it will be "MIT" or "MIT License"
+    # that is picked first.
+    expected_msgs = (
+        "fail-on license MIT was found for package",
+        "fail-on license MIT License was found for package",
+    )
     mocked_stdout = MockStdStream()
     mocked_stderr = MockStdStream()
     monkeypatch.setattr(sys.stdout, "write", mocked_stdout.write)
@@ -1034,10 +1046,7 @@ def test_fail_on_partial_match(monkeypatch) -> None:
     create_licenses_table(args)
 
     assert "" == mocked_stdout.printed
-    assert (
-        "fail-on license MIT License was found for "
-        "package" in mocked_stderr.printed
-    )
+    assert any(msg in mocked_stderr.printed for msg in expected_msgs)
 
 
 def test_enums() -> None:

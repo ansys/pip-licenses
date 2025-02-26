@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pip-licenses"
 description = "Dump the software license list of Python packages installed with pip."
 dynamic = ["version", "readme"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
 maintainers = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
@@ -17,10 +17,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: System :: Systems Administration",
     "Topic :: System :: System Shells",
     "Typing :: Typed"
@@ -74,7 +74,6 @@ known_first_party = ["piplicenses"]
 profile = "black"
 
 [tool.mypy]
-mypy_path = "stubs/"
 exclude = ["venv"]
 
 [tool.coverage.run]
