@@ -931,6 +931,13 @@ def test_allow_only(monkeypatch) -> None:
         "GNU Library or Lesser General Public License (LGPL)",
     )
     allow_only_args = ["--allow-only={}".format(";".join(licenses))]
+    # Depending on OS version, distribution might be traversed in a different
+    # order and we can't tell if it will be "MIT" or "MIT License" that is
+    # picked first.
+    expected_msgs = (
+        "license MIT not in allow-only licenses was found for package",
+        "license MIT License not in allow-only licenses was found for package",
+    )
     mocked_stdout = MockStdStream()
     mocked_stderr = MockStdStream()
     monkeypatch.setattr(sys.stdout, "write", mocked_stdout.write)
@@ -940,10 +947,7 @@ def test_allow_only(monkeypatch) -> None:
     create_licenses_table(args)
 
     assert "" == mocked_stdout.printed
-    assert (
-        "license MIT License not in allow-only licenses was found for "
-        "package" in mocked_stderr.printed
-    )
+    assert any(msg in mocked_stderr.printed for msg in expected_msgs)
 
 
 def test_allow_only_partial(monkeypatch) -> None:
@@ -960,6 +964,13 @@ def test_allow_only_partial(monkeypatch) -> None:
         "--partial-match",
         "--allow-only={}".format(";".join(licenses)),
     ]
+    # Depending on OS version, distribution might be traversed in a different
+    # order and we can't tell if it will be "MIT" or "MIT License" that is
+    # picked first.
+    expected_msgs = (
+        "license MIT not in allow-only licenses was found for package",
+        "license MIT License not in allow-only licenses was found for package",
+    )
     mocked_stdout = MockStdStream()
     mocked_stderr = MockStdStream()
     monkeypatch.setattr(sys.stdout, "write", mocked_stdout.write)
@@ -969,10 +980,7 @@ def test_allow_only_partial(monkeypatch) -> None:
     create_licenses_table(args)
 
     assert "" == mocked_stdout.printed
-    assert (
-        "license MIT License not in allow-only licenses was found for "
-        "package" in mocked_stderr.printed
-    )
+    assert any(msg in mocked_stderr.printed for msg in expected_msgs)
 
 
 def test_different_python() -> None:
