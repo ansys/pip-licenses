@@ -10,6 +10,8 @@ backports-tarfile==1.2.0
     # via jaraco-context
 black==25.1.0
     # via pip-licenses (pyproject.toml)
+boolean-py==5.0
+    # via license-expression
 build==1.2.2.post1
     # via pip-tools
 certifi==2025.1.31
@@ -20,11 +22,6 @@ click==8.1.8
     # via
     #   black
     #   pip-tools
-colorama==0.4.6
-    # via
-    #   build
-    #   click
-    #   pytest
 coverage[toml]==7.6.12
     # via pytest-cov
 docutils==0.21.2
@@ -51,6 +48,8 @@ jaraco-functools==4.1.0
     # via keyring
 keyring==25.6.0
     # via twine
+license-expression==30.4.1
+    # via pip-licenses (pyproject.toml)
 markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
@@ -109,8 +108,6 @@ pytest-pycodestyle==2.4.1
     # via pip-licenses (pyproject.toml)
 pytest-runner==6.0.1
     # via pip-licenses (pyproject.toml)
-pywin32-ctypes==0.2.3
-    # via keyring
 readme-renderer==44.0
     # via twine
 requests==2.32.3

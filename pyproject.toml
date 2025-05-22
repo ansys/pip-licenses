@@ -7,7 +7,7 @@ name = "pip-licenses"
 description = "Dump the software license list of Python packages installed with pip."
 dynamic = ["version", "readme"]
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = { text = "MIT" }
 authors = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
 maintainers = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
 keywords = ["pip", "pypi", "package", "license", "check"]
@@ -26,6 +26,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
+    "license-expression >= 30.4.1",
     "prettytable >= 2.3.0",
     "tomli >= 2",
 ]
@@ -77,6 +78,7 @@ known_first_party = ["piplicenses"]
 profile = "black"
 
 [tool.mypy]
+mypy_path = [".", "stubs"]
 exclude = ["venv"]
 
 [tool.coverage.run]

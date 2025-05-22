@@ -43,6 +43,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Type, cast
 
 import tomli
+from license_expression import ExpressionError, Licensing
 from prettytable import HRuleStyle, PrettyTable, RowType
 
 if TYPE_CHECKING:
@@ -612,7 +613,11 @@ def select_license_by_source(
     license_expression: str,
 ) -> set[str]:
     if license_expression != LICENSE_UNKNOWN:
-        return {license_expression}
+        return (
+            _parse_spdx(license_expression)
+            if _is_valid_spdx(license_expression)
+            else {license_expression}
+        )
 
     license_classifier_set = set(license_classifier) or {LICENSE_UNKNOWN}
     if (
@@ -622,7 +627,31 @@ def select_license_by_source(
     ):
         return license_classifier_set
     else:
-        return {license_meta}
+        return (
+            _parse_spdx(license_meta)
+            if _is_valid_spdx(license_meta)
+            else {license_meta}
+        )
+
+
+def _is_valid_spdx(spdx_expression: str) -> bool:
+    """Check if the license expression is valid."""
+    try:
+        Licensing().parse(spdx_expression)
+        return True
+    except ExpressionError:
+        return False
+
+
+def _parse_spdx(
+    expression: str,
+) -> set[str]:
+    """Parse a license expression and return a set of licenses."""
+    licensing = Licensing()
+    parsed = licensing.parse(expression)
+    if parsed is None:
+        return set()
+    return {license for license in parsed.objects}
 
 
 def get_output_fields(args: CustomNamespace) -> list[str]:
