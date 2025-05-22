@@ -22,6 +22,7 @@ import docutils.utils
 import pytest
 import tomli_w
 from _pytest.capture import CaptureFixture
+from prettytable import HRuleStyle
 
 import piplicenses
 from piplicenses import (
@@ -52,7 +53,6 @@ from piplicenses import (
     select_license_by_source,
     value_to_enum_key,
 )
-from prettytable import HRuleStyle
 
 if TYPE_CHECKING:
     if sys.version_info >= (3, 10):
@@ -260,6 +260,21 @@ class TestGetLicenses(CommandLineTestCase):
         # TODO (maybe black)
         # for license_name in ("MIT",):
         #     self.assertIn(license_name, license_expression)
+
+    def test_display_multiple_license_from_meta(self) -> None:
+        license_meta = "Apache-2.0 OR BSD-3-Clause"
+        self.assertEqual(
+            {
+                "Apache-2.0",
+                "BSD-3-Clause",
+            },
+            select_license_by_source(
+                FromArg.META,
+                license_classifier=[],
+                license_meta=license_meta,
+                license_expression=LICENSE_UNKNOWN,
+            ),
+        )
 
     def test_find_license_from_classifier(self) -> None:
         classifiers = ["License :: OSI Approved :: MIT License"]

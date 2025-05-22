@@ -40,7 +40,7 @@ from functools import partial
 from importlib import metadata as importlib_metadata
 from importlib.metadata import Distribution
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterable, List, Type, cast
+from typing import TYPE_CHECKING, Type, cast
 
 import tomli
 from prettytable import HRuleStyle, PrettyTable, RowType
