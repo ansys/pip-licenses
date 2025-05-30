@@ -53,7 +53,7 @@ if TYPE_CHECKING:
 open = open  # allow monkey patching
 
 __pkgname__ = "pip-licenses"
-__version__ = "5.0.0"
+__version__ = "6.0.dev0"
 __summary__ = (
     "Dump the software license list of Python packages installed with pip."
 )
