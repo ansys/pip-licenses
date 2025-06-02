@@ -7,7 +7,7 @@ name = "pip-licenses"
 description = "Dump the software license list of Python packages installed with pip."
 dynamic = ["version", "readme"]
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = { text = "MIT" }
 authors = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
 maintainers = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
 keywords = ["pip", "pypi", "package", "license", "check"]
@@ -23,11 +23,12 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: System :: Systems Administration",
     "Topic :: System :: System Shells",
-    "Typing :: Typed"
+    "Typing :: Typed",
 ]
 dependencies = [
+    "license-expression >= 30.4.1",
     "prettytable >= 2.3.0",
-    "tomli >= 2"
+    "tomli >= 2",
 ]
 
 [project.optional-dependencies]
@@ -44,7 +45,7 @@ dev = [
     "pytest-pycodestyle",
     "pytest-runner",
     "twine",
-    "tomli-w"
+    "tomli-w",
 ]
 
 [project.urls]
@@ -59,8 +60,11 @@ pip-licenses = "piplicenses:main"
 py-modules = ["piplicenses"]
 
 [tool.setuptools.dynamic]
-version = {attr = "piplicenses.__version__"}
-readme = {file = ["README.md", "CHANGELOG.md"], content-type = "text/markdown"}
+version = { attr = "piplicenses.__version__" }
+readme = { file = [
+    "README.md",
+    "CHANGELOG.md",
+], content-type = "text/markdown" }
 
 [tool.pytest.ini_options]
 addopts = "--pycodestyle -v --cov --cov-report term-missing"
@@ -74,6 +78,7 @@ known_first_party = ["piplicenses"]
 profile = "black"
 
 [tool.mypy]
+mypy_path = [".", "stubs"]
 exclude = ["venv"]
 
 [tool.coverage.run]
